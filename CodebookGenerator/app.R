@@ -1,9 +1,11 @@
 # Load required libraries
 library(shiny)
+library(shinyjs)  # Load shinyjs for client-side interactions
 library(rhandsontable)
 
 # Define UI
 ui <- fluidPage(
+  useShinyjs(),  # Initialize shinyjs
   # Main layout with sidebar and main panel
   sidebarLayout(
     # Sidebar with logo, file input, instructions, and download button
@@ -25,13 +27,32 @@ ui <- fluidPage(
         tags$li("Edit the 'Label', 'Type', and 'Units' columns in the variable attributes table."),
         tags$li("The 'Range_or_Levels' column updates automatically based on your selections."),
         tags$li("When you're ready, click 'Download the Codebook' to save your codebook as a CSV file."),
-        style = "font-size: 16px;" ),
+        style = "font-size: 16px;"
+      ),
       
       fileInput("datafile", "Upload your data file",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv", ".tsv")),
       
-      # Download button
-      downloadButton("download_codebook", "Download the Codebook")
+      # Replace downloadButton with actionButton
+      actionButton("download_codebook", "Download the Codebook"),
+      
+      # Include JavaScript to handle the download
+      tags$script(HTML("
+        Shiny.addCustomMessageHandler('downloadCodebook', function(message) {
+          var csvContent = message.csv;
+          var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          var link = document.createElement('a');
+          if (link.download !== undefined) { // feature detection
+            var url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', message.filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        });
+      "))
     ),
     # Main panel with centered title and tables
     mainPanel(
@@ -51,8 +72,6 @@ ui <- fluidPage(
 
 # Define Server
 server <- function(input, output, session) {
-  # (Server code remains the same as before)
-  
   # Reactive value to store data
   data <- reactiveVal()
   
@@ -118,7 +137,7 @@ server <- function(input, output, session) {
     req(attributes())
     attr <- attributes()
     rhandsontable(attr, rowHeaders = NULL) %>%
-      hot_col("Label", type = "text", width = 200) %>%
+      hot_col("Label", type = "text", width = 400) %>%
       hot_col("Type", type = "dropdown", source = c("numeric", "character", "factor", "Date")) %>%
       hot_col("Range_or_Levels", readOnly = TRUE, renderer = "
         function(instance, td, row, col, prop, value, cellProperties) {
@@ -221,22 +240,34 @@ server <- function(input, output, session) {
     })
   })
   
-  # Download Codebook CSV with filename based on uploaded file's name
-  output$download_codebook <- downloadHandler(
-    filename = function() {
-      req(input$datafile)  # Ensure a file has been uploaded
-      original_name <- input$datafile$name
-      # Remove the file extension from the original filename
-      file_base <- tools::file_path_sans_ext(original_name)
-      # Sanitize the filename by replacing spaces and special characters
-      file_base <- gsub("[^A-Za-z0-9_]", "_", file_base)
-      # Construct the new filename
-      paste0(file_base, "_codebook.csv")
-    },
-    content = function(file) {
-      write.csv(attributes(), file, row.names = FALSE)
-    }
-  )
+  # Handle download of codebook CSV
+  observeEvent(input$download_codebook, {
+    req(attributes())
+    req(input$datafile)  # Ensure a file has been uploaded
+    
+    # Get the original file name
+    original_name <- input$datafile$name
+    # Remove the file extension from the original filename
+    file_base <- tools::file_path_sans_ext(original_name)
+    # Sanitize the filename by replacing spaces and special characters
+    file_base <- gsub("[^A-Za-z0-9_]", "_", file_base)
+    # Construct the new filename
+    filename <- paste0(file_base, "_codebook.csv")
+    
+    # Generate the CSV content as a string
+    csv_string <- paste(
+      capture.output(
+        write.csv(attributes(), row.names = FALSE, file = "")
+      ),
+      collapse = "\n"
+    )
+    
+    # Send the CSV content and filename to JavaScript
+    session$sendCustomMessage('downloadCodebook', list(
+      csv = csv_string,
+      filename = filename
+    ))
+  })
 }
 
 # Run the Shiny app
