@@ -100,6 +100,20 @@ server <- function(input, output, session) {
       }
     })
     
+    # Calculate missing values
+    missing_values <- sapply(df, function(x) {
+      x_char <- as.character(x)
+      x_trim <- trimws(x_char)
+      x_lower <- tolower(x_trim)
+      missing_strings <- c("na", "n/a", "")
+      num_missing <- sum(is.na(x) | x_lower %in% missing_strings)
+      if (num_missing > 0) {
+        as.character(num_missing)
+      } else {
+        "No missing values"
+      }
+    })
+    
     # Initialize attributes with adjusted column order
     attr <- data.frame(
       Variable = colnames(df),
@@ -116,7 +130,8 @@ server <- function(input, output, session) {
           ""
         }
       }),
-      Units = rep("", ncol(df)),  # 'Units' after 'Range_or_Levels'
+      Missing_Values = missing_values,
+      Units = rep("", ncol(df)),  # 'Units' after 'Missing_Values'
       stringsAsFactors = FALSE
     )
     
@@ -149,6 +164,7 @@ server <- function(input, output, session) {
           td.title = value;
         }
       ") %>%
+      hot_col("Missing_Values", readOnly = TRUE, width = 120) %>%  # New column
       hot_col("Units", type = "text", width = 150)
   })
   
@@ -157,7 +173,7 @@ server <- function(input, output, session) {
     attr <- hot_to_r(input$variable_attributes_table)
     df <- data()
     
-    # Loop over each variable to update data types and Range_or_Levels
+    # Loop over each variable to update data types, Range_or_Levels, and Missing_Values
     for (i in seq_len(nrow(attr))) {
       variable_name <- attr$Variable[i]
       updated_type <- as.character(attr$Type[i])
@@ -165,6 +181,7 @@ server <- function(input, output, session) {
       # Check if updated_type is NA
       if (is.na(updated_type)) {
         attr$Range_or_Levels[i] <- ""
+        attr$Missing_Values[i] <- ""
         next  # Skip to the next iteration
       }
       
@@ -215,6 +232,19 @@ server <- function(input, output, session) {
       } else {
         attr$Range_or_Levels[i] <- ""
       }
+      
+      # Recalculate missing values for the variable
+      x <- df[[variable_name]]
+      x_char <- as.character(x)
+      x_trim <- trimws(x_char)
+      x_lower <- tolower(x_trim)
+      missing_strings <- c("na", "n/a", "")
+      num_missing <- sum(is.na(x) | x_lower %in% missing_strings)
+      if (num_missing > 0) {
+        attr$Missing_Values[i] <- as.character(num_missing)
+      } else {
+        attr$Missing_Values[i] <- "No missing values"
+      }
     }
     
     # Update reactive values
@@ -236,6 +266,7 @@ server <- function(input, output, session) {
             td.title = value;
           }
         ") %>%
+        hot_col("Missing_Values", readOnly = TRUE, width = 120) %>%  # New column
         hot_col("Units", type = "text", width = 150)
     })
   })
