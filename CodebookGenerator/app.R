@@ -1,11 +1,22 @@
 # Load required libraries
 library(shiny)
-library(shinyjs)  # Load shinyjs for client-side interactions
+library(shinyjs) 
 library(rhandsontable)
+library(readxl) 
 
 # Define UI
 ui <- fluidPage(
   useShinyjs(),  # Initialize shinyjs
+  
+  # Add custom CSS to style the column headers
+  tags$style(HTML("
+    /* Style the 'Label' and 'Units' column headers */
+    table.htCore thead tr th:nth-child(2),
+    table.htCore thead tr th:nth-child(6) {
+      color: green !important;
+    }
+  ")),
+  
   # Main layout with sidebar and main panel
   sidebarLayout(
     # Sidebar with logo, file input, instructions, and download button
@@ -22,19 +33,19 @@ ui <- fluidPage(
       # Instructions for using the app
       h4("How to use the app:"),
       tags$ul(
-        tags$li("Upload your CSV or TSV data file using the 'Upload your data file' button above."),
+        tags$li("Upload your CSV, TSV, or Excel data file using the 'Upload your data file' button below."),
         tags$li("After uploading, preview your data in the main panel."),
         tags$li("Edit the 'Label', 'Type', and 'Units' columns in the variable attributes table."),
-        tags$li("The 'Range_or_Levels' column updates automatically based on your selections."),
-        tags$li("When you're ready, click 'Download the Codebook' to save your codebook as a CSV file."),
+        tags$li("The 'Range_or_Levels' and 'Missing_Values' columns update automatically based on your selections."),
+        tags$li("When you're ready, click 'Download the codebook' to save your codebook as a CSV file."),
         style = "font-size: 16px;"
       ),
       
       fileInput("datafile", "Upload your data file",
-                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv", ".tsv")),
+                accept = c(".csv", ".tsv", ".xlsx")),
       
       # Replace downloadButton with actionButton
-      actionButton("download_codebook", "Download the Codebook"),
+      actionButton("download_codebook", "Download the codebook"),
       
       # Include JavaScript to handle the download
       tags$script(HTML("
@@ -58,7 +69,7 @@ ui <- fluidPage(
     mainPanel(
       # Centered title in the main panel
       tags$div(
-        h1("Codebook Generator for Scientific Data Files", style = "margin: 0; text-align: center;"),
+        h1("Codebook generator for data tables", style = "margin: 0; text-align: center;"),
         style = "margin-bottom: 20px;"
       ),
       h3("Data Preview"),  # Subtitle for data preview
@@ -81,7 +92,29 @@ server <- function(input, output, session) {
   # Load data when file is uploaded
   observeEvent(input$datafile, {
     req(input$datafile)
-    df <- read.csv(input$datafile$datapath, stringsAsFactors = FALSE)
+    
+    # Determine the file extension
+    file_ext <- tools::file_ext(input$datafile$name)
+    
+    # Read the data based on file extension
+    if (file_ext %in% c("csv", "tsv")) {
+      # For CSV and TSV files
+      df <- read.csv(input$datafile$datapath, stringsAsFactors = FALSE)
+    } else if (file_ext %in% c("xlsx")) {
+      # For Excel files
+      df <- read_excel(input$datafile$datapath)
+      df <- as.data.frame(df)  # Convert to data frame if necessary
+    } else {
+      # Unsupported file type
+      showModal(modalDialog(
+        title = "Unsupported File Type",
+        "Please upload a CSV, TSV, or Excel (.xlsx) file.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
+      return(NULL)
+    }
+    
     data(df)
     
     # Map variable types to predefined levels
@@ -93,7 +126,7 @@ server <- function(input, output, session) {
         "character"
       } else if (t %in% c("factor")) {
         "factor"
-      } else if (t %in% c("Date")) {
+      } else if (t %in% c("Date", "POSIXct", "POSIXt")) {
         "Date"
       } else {
         "character"  # Default to 'character' for other types
@@ -224,7 +257,7 @@ server <- function(input, output, session) {
         # Try to convert to Date
         result <- tryCatch({
           # Specify the date format depending on your data
-          df[[variable_name]] <- as.Date(df[[variable_name]], format = "%Y-%m-%d")
+          df[[variable_name]] <- as.Date(df[[variable_name]])
           attr$Range_or_Levels[i] <- paste0("Date Range: ", min(df[[variable_name]], na.rm = TRUE), " - ", max(df[[variable_name]], na.rm = TRUE))
         }, error = function(e) {
           attr$Range_or_Levels[i] <- "incompatible data type"
