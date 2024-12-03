@@ -4,6 +4,11 @@ library(shinyjs)
 library(rhandsontable)
 library(readxl) 
 
+# Load required libraries
+library(shiny)
+library(shinyjs)
+library(rhandsontable)
+
 # Define UI
 ui <- fluidPage(
   useShinyjs(),  # Initialize shinyjs
@@ -13,7 +18,8 @@ ui <- fluidPage(
     /* Style the 'Label' and 'Units' column headers */
     table.htCore thead tr th:nth-child(2),
     table.htCore thead tr th:nth-child(6) {
-      color: green !important;
+      background-color: green !important;
+      color: white !important;  /* Ensure text is readable on green background */
     }
   ")),
   
@@ -28,7 +34,7 @@ ui <- fluidPage(
       ),
       
       # Descriptive text below the logo
-      p("Welcome to the Codebook Generator App! This tool helps you create a codebook for your scientific data files with ease. Please contact us at curators@frdr-dfdr.ca for improvements or comments.", style = "font-size: 16px;"),
+      p("Welcome to the Codebook Generator App! This tool helps you create a codebook for your data tables with ease. Please contact us at curators@frdr-dfdr.ca for improvements or comments.", style = "font-size: 16px;"),
       
       # Instructions for using the app
       h4("How to use the app:"),
