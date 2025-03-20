@@ -1,0 +1,97 @@
+---
+title-block-banner: true
+title: "Création de livres de code pour les données de recherche" 
+author: 
+  - name: "Équipe de curation des données de recherche"
+    affiliation: "Alliance de recherche numérique du Canada"
+    email: "rdm-gdr@alliancecan.ca"
+date: "Version 1, March 2025"
+format: 
+  html:
+    toc: false
+    number-sections: false
+    include-in-header: 
+      text: |
+        <style>
+          .header-links { text-align: left; font-size: 14px; margin-top: -15px; }
+          .header-links a { margin-left: 10px; }
+        </style>
+keywords: 
+  - Codebook
+  - Data dictionary
+  - Research Data Management
+  - Open Science
+  - Data sharing
+links: 
+  - text: "GitHub Repository"
+    url: "https://github.com/Alliance-RDM-GDR/RDM_CodebookGenerator"
+  - text: "Codebook generator Web-App"
+    url: "https://rdm-codebook-generator.vercel.app/"
+
+css: styles.css
+---
+
+::: {#header-info}
+<div class="header-links">
+🔗 <a href="https://github.com/Alliance-RDM-GDR/RDM_CodebookGenerator" target="_blank">GitHub Repository</a> |
+📄 <a href="https://rdm-codebook-generator.vercel.app/" target="_blank">Codebook generator Web-App</a>
+</div>
+
+<div class="language-switch">
+🌍 <a href="https://alliance-rdm-gdr.github.io/RDM_CodebookGenerator/RDM_Codebook_en.html" target="_blank">🇺🇸 English Version</a>
+</div>
+:::
+
+
+## livres de code / Dictionnaires de données
+
+Aussi appelés dictionnaires de données, les livres de code sont essentiels pour décrire le contenu, la structure et l'organisation d’un ensemble de données. Ils garantissent une documentation adéquate et facilitent la compréhension et la réutilisation des données par d'autres chercheurs, en servant de référence pour l’analyse et l’interprétation.
+
+## Principaux éléments d'un livre de codes
+
+En tant qu’artéfact documentaire (au niveau des tableaux), un livre de code définit les variables d’un ensemble de données aussi clairement que possible. Veuillez prendre en compte les attributs suivants :
+
+::: {.box}
+- **Nom de la variable :** Un identifiant unique correspondant au nom de la variable dans le tableau de données (ex. *EMPLOY1* ou *VAR001*).
+
+- **Libellé de la variable :** Une brève description disciplinaire de la variable (ex. "*Statut d'emploi*").
+
+- **Type de variable :** Indique le type de variable (ex. *numérique, entier, caractère, booléen*).
+
+- **Plages ou niveaux :** Indique l’étendue ou les niveaux de la variable selon son type (ex. "*0-100*", "*Niveaux = A1, A2, A3*").
+
+- **Valeurs manquantes :** Indique le nombre (le cas échéant) de valeurs manquantes pour chaque colonne.
+
+- **Unités :** Unités de mesure associées à la variable (ex. "*centimètres*", "*mètres carrés*").
+:::
+
+::: {.callout-tip}
+Selon la discipline, d'autres attributs peuvent être décrits pour rendre l’ensemble de données plus compréhensible. Cliquez [ici](https://osf.io/925sh) pour voir un exemple.
+:::
+
+## Comment créer un codebook
+
+Créer des livres de code est une bonne pratique scientifique qui devrait être mise en place dès le début du processus de recherche. Il est recommandé d’utiliser un format simple et clair. L’application web de l’Alliance, accessible [ici](https://rdm-codebook-generator.vercel.app/), permet de générer un fichier .CSV à partir d’un tableau de données donné.
+
+
+# Exemple de livre de code
+
+::: {style="text-align: left; font-size: 80%"}
+| **Variable**  | **Libellé**          | **Type**  | **Plage-Niveaux** | **Valeurs manquantes** | **Unités** |
+|--------------|-----------------------|-----------|-------------------|------------------------|------------|
+| Stage        | Stade expérimental    | Facteur   | 1, 2, 3, 4        | NA                     | NA         |
+| Intervention | Groupe d’intervention | Facteur   | G1, G2, G3        | NA                     | NA         |
+| Âge          | Âge du participant    | Numérique | 18-26             | 1                      | Années     |
+| Sexe         | Sexe biologique       | Facteur   | Homme, Femme      | NA                     | NA         |
+| Score        | Score cognitif        | Numérique | 1-20              | NA                     | AU         |
+:::
+
+
+::: {.callout-tip}
+## Engagement pour une science reproductible
+Les livres de code sont essentiels pour la transparence de la recherche, la reproductibilité et la préservation à long terme des données. 
+:::
+
+::: {style="text-align: center;font-size: 150%"}
+![Visitez [FRDR](https://www.frdr-dfdr.ca/repo/) ou [Borealis](https://borealisdata.ca/)](images/Repositories_Logo.png){fig-alt="Logos de deux dépôts de données de recherche canadiens : FRDR (Federated Research Data Repository) et Borealis. Le logo de FRDR présente un motif géométrique de carrés jaunes formant un losange, avec le nom du dépôt en texte noir et or. Le logo de Borealis inclut une représentation artistique des aurores boréales au-dessus des montagnes et d’un lac, avec le nom du dépôt en texte blanc en gras." fig-align="center" width="600" height="120"}
+:::

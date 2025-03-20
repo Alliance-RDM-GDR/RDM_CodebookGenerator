@@ -1,0 +1,97 @@
+---
+title-block-banner: true
+title: "Creating Codebooks for Research Data" 
+author: 
+  - name: "Research Data Curation Team"
+    affiliation: "Digital Research Alliance of Canada"
+    email: "rdm-gdr@alliancecan.ca"
+date: "Version 1, March 2025"
+format: 
+  html:
+    toc: false
+    number-sections: false
+    include-in-header: 
+      text: |
+        <style>
+          .header-links { text-align: left; font-size: 14px; margin-top: -15px; }
+          .header-links a { margin-left: 10px; }
+        </style>
+keywords: 
+  - Codebook
+  - Data dictionary
+  - Research Data Management
+  - Open Science
+  - Data sharing
+links: 
+  - text: "GitHub Repository"
+    url: "https://github.com/Alliance-RDM-GDR/RDM_CodebookGenerator"
+  - text: "Codebook generator Web-App"
+    url: "https://rdm-codebook-generator.vercel.app/"
+
+css: styles.css
+---
+
+::: {#header-info}
+<div class="header-links">
+🔗 <a href="https://github.com/Alliance-RDM-GDR/RDM_CodebookGenerator" target="_blank">GitHub Repository</a> |
+📄 <a href="https://rdm-codebook-generator.vercel.app/" target="_blank">Codebook generator Web-App</a>
+</div>
+
+<div class="language-switch">
+🌍 <a href="https://alliance-rdm-gdr.github.io/RDM_CodebookGenerator/RDM_Codebook_fr.html" target="_blank">🇫🇷 Version Française</a>
+</div>
+:::
+
+## Codebooks / data dictionaries
+
+Also known as data dictionaries, codebooks are essential to describe the contents, structure, and layout of a dataset. This ensures porper documentation, and further understing and reuse by other researchers as a reference for data analysis and interpretation.
+
+## Key Components of a Codebook
+
+As a document (table level) artifact, a codebook defines as clear as posible the varibles of a dataset. Please consider the following attributes:
+
+::: {.box}
+- **Variable Name:** A unique identifier for the variable name on the data table (e.g., *EMPLOY1* or *VAR001*).
+
+- **Variable Label:** A brief disciplinary description of the variable (e.g., "*Employment Statu*s").
+
+- **Varible type:** Indicates the type of variable (e.g *numeric, integrer, charcater, bolean*).
+
+- **Ranges or labels:** Contains the reange or variable leveld depending on the type (e.g "*0-100*", "*Levels = A1, A2, A3*".).
+
+- **Missing values:** Indicates the number (if any) of missing variables for each column.
+
+- **Units:** Measurement units for the variable (e.g., "*centimerters*", "*squared meters*").
+:::
+
+::: {.callout-tip}
+Depending on the discpline, more attributes could be describe to make the dataset understandable. Click [here](https://osf.io/925sh) to see an example.
+:::
+
+## How to create a codebook 
+
+Creating codebooks is a good scientific practice that should be implemented during the research process. Keep the format as simple as possible. The Alliance web application [here](https://rdm-codebook-generator.vercel.app/) allows the user to download a .CSV codebook derived from a given data table.
+
+
+# Example of codebook
+
+::: {style="text-align: left; font-size: 80%"}
+| **Variable**  | **Label**          |**type**  | **Range-Levels**| **Missing values**| **units** |
+|---------------|--------------------|----------------------------|-------------------|-----------|
+| Stage         | Experimental stage | Factor   |1, 2, 3, 4       |NA                 |NA         |
+| Intervention  | Intervention Group | Factor   |G1, G2, G3       |NA                 |NA         |
+| Age           | Participant age    | Numeric  |18-26            |1                  |Years      |
+| Sex           | Biological sex     | Factor   |Men, Women       |NA                 |NA         |
+| Score         | Cognitive score    | Numeric  |1-20             |NA                 |AU         |
+
+:::
+
+
+::: {.callout-tip}
+## Commitment to reproducible science
+Codebooks are crucial for research transparency, reproducibility, and long-term data preservation. 
+:::
+
+::: {style="text-align: center;font-size: 150%"}
+![Visit [FRDR](https://www.frdr-dfdr.ca/repo/) or [Borealis](https://borealisdata.ca/)](images/Repositories_Logo.png){fig-alt="Logos of two Canadian research data repositories: FRDR (Federated Research Data Repository) and Borealis. The FRDR logo features a geometric pattern of yellow squares forming a diamond shape, with the repository name in black and gold text. The Borealis logo includes an artistic depiction of the Northern Lights over mountains and a lake, with the repository name in bold white text. " fig-align="center" width="600" height="120"}
+:::
